@@ -1,0 +1,6 @@
+{
+  "name": "云序择名",
+  "description": "云生雅序，择优为名。纯前端现代清雅名字生成与择优工具，内置多功能词库与个性化风格筛选。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
