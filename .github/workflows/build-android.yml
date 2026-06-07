@@ -3,20 +3,12 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Download official gradle-wrapper.jar
-      run: |
-        cd android/gradle/wrapper
-        curl -L -o gradle-wrapper.jar "https://repo.maven.apache.org/maven2/org/gradle/gradle-wrapper/8.14.3/gradle-wrapper-8.14.3.jar"
-        ls -la gradle-wrapper.jar
     
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -42,8 +34,12 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
     
-    - name: Make gradlew executable
-      run: chmod +x ./android/gradlew
+    - name: Install Gradle 8.14.3
+      run: |
+        wget -q https://services.gradle.org/distributions/gradle-8.14.3-bin.zip -O /tmp/gradle.zip
+        unzip -q /tmp/gradle.zip -d /opt
+        ln -s /opt/gradle-8.14.3/bin/gradle /usr/local/bin/gradle
+        gradle --version
 
     - name: Create keystore file from GitHub Secrets
       run: |
@@ -52,67 +48,20 @@ jobs:
           echo "Error: KEYSTORE_BASE64 secret is not set"
           exit 1
         fi
-        if [ -f "my-release-key.keystore" ]; then
-          rm -f my-release-key.keystore
-        fi
-        echo "Creating keystore file from GitHub Secrets"
         echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > my-release-key.keystore
-        echo "=== Listing aliases in keystore ==="
-        keytool -list -keystore my-release-key.keystore -storepass "${{ secrets.KEYSTORE_PASSWORD }}"
-        echo "=== Keystore file details ==="
         ls -la my-release-key.keystore
-        file my-release-key.keystore
-
-    - name: Extract SHA1 from keystore
-      run: |
-        cd android
-        echo "Run # 将 base64 编码的 keystore 还原为文件"
-        echo "# 将 base64 编码的 keystore 还原为文件"
-        echo ""
-        full_output=$(keytool -list -v -keystore my-release-key.keystore -alias yunxuzeming -storepass "${{ secrets.KEYSTORE_PASSWORD }}")
-        
-        sha1_with_colons=$(echo "$full_output" | grep -i "sha1:" | head -1 | sed 's/.*sha1:\s*//i' | sed 's/\s*$//')
-        sha256_with_colons=$(echo "$full_output" | grep -i "sha256:" | head -1 | sed 's/.*sha256:\s*//i' | sed 's/\s*$//')
-        md5_with_colons=$(echo "$full_output" | grep -i "md5:" | head -1 | sed 's/.*md5:\s*//i' | sed 's/\s*$//')
-        
-        echo "===== 证书指纹 ====="
-        echo "     SHA1: $sha1_with_colons"
-        echo "     SHA256: $sha256_with_colons"
-        echo "===================="
-        echo ""
-        echo "===== MD5 指纹 ====="
-        echo "$md5_with_colons"
-        echo "===================="
-        echo ""
-        echo "===== SHA1 指纹（小米应用商店用）====="
-        echo "$sha1_with_colons"
-        echo "======================================="
-        echo ""
-        echo "===== 去掉冒号的 SHA1（直接复制）====="
-        sha1_without_colons=$(echo "$sha1_with_colons" | tr -d ":")
-        echo "$sha1_without_colons"
-        echo "======================================="
-        echo ""
-        echo "===== 公钥信息 ====="
-        echo "Certificate fingerprints:"
-        echo "     SHA1: $sha1_with_colons"
-        echo "     SHA256: $sha256_with_colons"
-        signature_algorithm=$(echo "$full_output" | grep -i "Signature algorithm name" | head -1 | sed 's/.*://' | sed 's/\s*$//')
-        echo "Signature algorithm name: $signature_algorithm"
-        echo "============================="
 
     - name: Build Android Release APK
       run: |
         cd android
-        echo "=== Building Release APK ==="
-        ./gradlew clean
-        ./gradlew assembleRelease --no-build-cache --no-daemon -Pandroid.injected.signing.store.file=my-release-key.keystore -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" -Pandroid.injected.signing.key.alias=yunxuzeming -Pandroid.injected.signing.key.password="${{ secrets.KEYSTORE_PASSWORD }}"
+        gradle clean --no-daemon --no-wrapper
+        gradle assembleRelease --no-build-cache --no-daemon --no-wrapper -Pandroid.injected.signing.store.file=my-release-key.keystore -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" -Pandroid.injected.signing.key.alias=yunxuzeming -Pandroid.injected.signing.key.password="${{ secrets.KEYSTORE_PASSWORD }}"
         ls -la app/build/outputs/apk/release/
 
     - name: Build Android Debug APK
       run: |
         cd android
-        ./gradlew assembleDebug
+        gradle assembleDebug --no-daemon --no-wrapper
     
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
