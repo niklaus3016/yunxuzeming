@@ -42,6 +42,13 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
     
+    - name: Install Gradle
+      run: |
+        wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip -O /tmp/gradle.zip
+        unzip -q /tmp/gradle.zip -d /opt
+        ln -s /opt/gradle-8.5/bin/gradle /usr/local/bin/gradle
+        gradle --version
+    
     - name: Make gradlew executable
       run: chmod +x ./android/gradlew
 
@@ -104,17 +111,15 @@ jobs:
     - name: Build Android Release APK
       run: |
         cd android
-        chmod +x gradlew
         echo "=== Building Release APK ==="
-        ./gradlew clean
-        ./gradlew assembleRelease --no-build-cache --no-daemon -Pandroid.injected.signing.store.file=my-release-key.keystore -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" -Pandroid.injected.signing.key.alias=yunxuzeming -Pandroid.injected.signing.key.password="${{ secrets.KEYSTORE_PASSWORD }}"
+        gradle clean
+        gradle assembleRelease --no-build-cache --no-daemon -Pandroid.injected.signing.store.file=my-release-key.keystore -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" -Pandroid.injected.signing.key.alias=yunxuzeming -Pandroid.injected.signing.key.password="${{ secrets.KEYSTORE_PASSWORD }}"
         ls -la app/build/outputs/apk/release/
 
     - name: Build Android Debug APK
       run: |
         cd android
-        chmod +x gradlew
-        ./gradlew assembleDebug
+        gradle assembleDebug
     
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
