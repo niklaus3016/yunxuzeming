@@ -101,14 +101,14 @@ jobs:
       run: |
         cd android
         echo "=== Building Release APK ==="
-        gradle clean --no-daemon --no-wrapper
-        gradle assembleRelease --no-build-cache --no-daemon --no-wrapper -Pandroid.injected.signing.store.file=my-release-key.keystore -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" -Pandroid.injected.signing.key.alias=yunxuzeming -Pandroid.injected.signing.key.password="${{ secrets.KEYSTORE_PASSWORD }}"
+        gradle clean --no-daemon
+        gradle assembleRelease --no-build-cache --no-daemon -Pandroid.injected.signing.store.file=my-release-key.keystore -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" -Pandroid.injected.signing.key.alias=yunxuzeming -Pandroid.injected.signing.key.password="${{ secrets.KEYSTORE_PASSWORD }}"
         ls -la app/build/outputs/apk/release/
 
     - name: Build Android Debug APK
       run: |
         cd android
-        gradle assembleDebug --no-daemon --no-wrapper
+        gradle assembleDebug --no-daemon
     
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
