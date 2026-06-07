@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+// 加载签名配置
+def signingPropsFile = rootProject.file('signing.properties')
+def signingProps = new Properties()
+if (signingPropsFile.exists()) {
+    signingProps.load(new FileInputStream(signingPropsFile))
+}
+
 android {
     namespace = "com.yunxuzeming.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -20,6 +27,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 如果签名配置存在，则使用签名
+            if (signingProps['STORE_FILE']) {
+                signingConfigs.release {
+                    storeFile file(signingProps['STORE_FILE'])
+                    storePassword signingProps['STORE_PASSWORD']
+                    keyAlias signingProps['KEY_ALIAS']
+                    keyPassword signingProps['KEY_PASSWORD']
+                }
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
