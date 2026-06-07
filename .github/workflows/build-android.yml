@@ -12,6 +12,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Download official gradle-wrapper.jar
+      run: |
+        cd android/gradle/wrapper
+        curl -L -o gradle-wrapper.jar "https://repo.maven.apache.org/maven2/org/gradle/gradle-wrapper/8.5/gradle-wrapper-8.5.jar"
+        ls -la gradle-wrapper.jar
+    
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
@@ -35,18 +41,6 @@ jobs:
     
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
-    
-    - name: Download official gradle-wrapper.jar
-      run: |
-        cd android/gradle/wrapper
-        # Download official gradle-wrapper.jar for Gradle 8.5
-        curl -L -o gradle-wrapper.jar "https://repo.maven.apache.org/maven2/org/gradle/gradle-wrapper/8.5/gradle-wrapper-8.5.jar"
-        ls -la gradle-wrapper.jar
-    
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
-      with:
-        gradle-version: '8.5'
     
     - name: Make gradlew executable
       run: chmod +x ./android/gradlew
