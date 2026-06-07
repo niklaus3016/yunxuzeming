@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* 隐藏全局滚动条，为手机 App 极简纯净体验定制 */
 html, body {
