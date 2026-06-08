@@ -109,7 +109,13 @@ export default function App() {
     const savedCollected = localStorage.getItem('yunxu_collected');
     if (savedCollected) {
       try {
-        setCollected(JSON.parse(savedCollected));
+        const parsed = JSON.parse(savedCollected);
+        // 确保每条记录都有有效id
+        const validCollected = parsed.map((item: any, index: number) => ({
+          ...item,
+          id: item.id || `col-fallback-${Date.now()}-${index}`
+        }));
+        setCollected(validCollected);
       } catch (err) {
         console.error('Failed to parse collected', err);
       }
@@ -119,7 +125,13 @@ export default function App() {
     const savedHistory = localStorage.getItem('yunxu_history');
     if (savedHistory) {
       try {
-        setHistory(JSON.parse(savedHistory));
+        const parsed = JSON.parse(savedHistory);
+        // 确保每条记录都有有效id
+        const validHistory = parsed.map((item: any, index: number) => ({
+          ...item,
+          id: item.id || `hist-fallback-${Date.now()}-${index}`
+        }));
+        setHistory(validHistory);
       } catch (err) {
         console.error('Failed to parse history', err);
       }
@@ -198,7 +210,12 @@ export default function App() {
     const savedCollected = localStorage.getItem('yunxu_collected');
     if (savedCollected) {
       try {
-        setCollected(JSON.parse(savedCollected));
+        const parsed = JSON.parse(savedCollected);
+        const validCollected = parsed.map((item: any, index: number) => ({
+          ...item,
+          id: item.id || `col-fallback-${Date.now()}-${index}`
+        }));
+        setCollected(validCollected);
       } catch (err) {
         console.error('Failed to parse collected', err);
       }
@@ -207,7 +224,12 @@ export default function App() {
     const savedHistory = localStorage.getItem('yunxu_history');
     if (savedHistory) {
       try {
-        setHistory(JSON.parse(savedHistory));
+        const parsed = JSON.parse(savedHistory);
+        const validHistory = parsed.map((item: any, index: number) => ({
+          ...item,
+          id: item.id || `hist-fallback-${Date.now()}-${index}`
+        }));
+        setHistory(validHistory);
       } catch (err) {
         console.error('Failed to parse history', err);
       }
@@ -466,7 +488,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-3.5 flex items-center justify-between" id="header-inner">
           {/* Logo 侧 */}
           <div className="flex items-center gap-2.5 select-none animate-fade-in" id="brand-logo-area">
-            <div className="w-9 h-9 rounded-xl bg-linear-to-tr from-[#6b8a9e] to-[#8fa385] flex items-center justify-center shadow-xs" id="brand-logo-icon">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#6b8a9e] to-[#8fa385] flex items-center justify-center shadow-xs" id="brand-logo-icon">
               {activeTab === '起名' && <Compass className="w-5 h-5 text-white animate-spin" style={{ animationDuration: '40s' }} />}
               {activeTab === '收藏' && <Heart className="w-5 h-5 text-white fill-white" />}
               {activeTab === '历史' && <History className="w-5 h-5 text-white" />}
@@ -559,7 +581,10 @@ export default function App() {
           </div>
         )}
 
-        <AnimatePresence mode="wait">
+        {/* 只有同意隐私政策后才显示主界面 */}
+        {privacyAccepted && (
+          <AnimatePresence mode="wait">
+            
           
           {/* ============ TABS 01: 智能起名板块 ============ */}
           {activeTab === '起名' && (
@@ -1028,7 +1053,7 @@ export default function App() {
                         <div className="flex flex-wrap gap-1.5" id={`history-names-${rec.id}`}>
                           {rec.generatedCards.map((g, gi) => (
                             <span
-                              key={gi}
+                              key={`${rec.id}-${gi}`}
                               className="bg-neutral-50/50 border border-neutral-150/80 px-3 py-1.5 rounded-2xl text-xs font-black text-neutral-800"
                             >
                               {g.surname ? `${g.surname}${g.name}` : g.name}
@@ -1095,20 +1120,38 @@ export default function App() {
                   <span>隐私政策与数据安全</span>
                 </h4>
                 
-                <div className="pt-2 border-t border-neutral-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-neutral-50 rounded-2xl border border-neutral-150" id="setting-action-row-privacy">
-                  <div>
-                    <h5 className="font-extrabold text-neutral-800 text-[11px]">查看完整的隐私政策承诺</h5>
-                    <p className="text-[10px] text-neutral-400 mt-0.5 font-sans">云序择名极其重视和妥善保护您的个人信息资产安全</p>
+                <div className="pt-2 border-t border-neutral-100 space-y-3" id="setting-action-row-privacy">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-neutral-50 rounded-2xl border border-neutral-150">
+                    <div>
+                      <h5 className="font-extrabold text-neutral-800 text-[11px]">用户服务协议</h5>
+                      <p className="text-[10px] text-neutral-400 mt-0.5 font-sans">了解您使用本应用的权利与义务</p>
+                    </div>
+                    
+                    <button
+                      onClick={() => setShowAgreementModal(true)}
+                      className="px-4 py-2 bg-white border border-neutral-200 text-neutral-750 hover:bg-neutral-50 hover:border-neutral-300 hover:text-neutral-900 active:scale-95 transition-all text-xs font-black rounded-xl cursor-pointer shadow-3xs flex items-center gap-1.5"
+                      id="settings-view-agreement-btn"
+                    >
+                      <span>查看协议</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-neutral-500" />
+                    </button>
                   </div>
                   
-                  <button
-                    onClick={() => setShowPrivacyDetailModal(true)}
-                    className="px-4 py-2 bg-white border border-neutral-200 text-neutral-750 hover:bg-neutral-50 hover:border-neutral-300 hover:text-neutral-900 active:scale-95 transition-all text-xs font-black rounded-xl cursor-pointer shadow-3xs flex items-center gap-1.5"
-                    id="settings-view-privacy-btn"
-                  >
-                    <span>查看政策</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-neutral-500" />
-                  </button>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-neutral-50 rounded-2xl border border-neutral-150">
+                    <div>
+                      <h5 className="font-extrabold text-neutral-800 text-[11px]">隐私政策承诺</h5>
+                      <p className="text-[10px] text-neutral-400 mt-0.5 font-sans">云序择名极其重视和妥善保护您的个人信息资产安全</p>
+                    </div>
+                    
+                    <button
+                      onClick={() => setShowPrivacyDetailModal(true)}
+                      className="px-4 py-2 bg-white border border-neutral-200 text-neutral-750 hover:bg-neutral-50 hover:border-neutral-300 hover:text-neutral-900 active:scale-95 transition-all text-xs font-black rounded-xl cursor-pointer shadow-3xs flex items-center gap-1.5"
+                      id="settings-view-privacy-btn"
+                    >
+                      <span>查看政策</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-neutral-500" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1135,6 +1178,7 @@ export default function App() {
           )}
 
         </AnimatePresence>
+        )}
 
       </main>
 
@@ -1300,7 +1344,7 @@ export default function App() {
       {/* 隐私政策抽屉/弹窗 */}
       <AnimatePresence>
         {privacyOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 select-none" id="privacy-policy-overlay">
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 select-none" id="privacy-policy-overlay">
             {/* 背景遮罩 */}
             <motion.div
               initial={{ opacity: 0 }}

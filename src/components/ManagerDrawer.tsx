@@ -304,7 +304,7 @@ export function ManagerDrawer({
                             <div className="flex flex-wrap gap-1.5">
                               {rec.generatedCards.map((g, gi) => (
                                 <span
-                                  key={gi}
+                                  key={`${rec.id}-${gi}`}
                                   className="bg-white px-2.5 py-1 rounded-xl border border-neutral-150 text-[11px] font-bold text-neutral-800 shadow-3xs"
                                 >
                                   {g.surname ? `${g.surname}${g.name}` : g.name}

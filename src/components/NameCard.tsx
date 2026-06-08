@@ -68,9 +68,9 @@ export function NameCard({
       <div>
         {/* 卡片头部：风格标签 */}
         <div className="flex flex-wrap gap-1.5 mb-3.5" id={`card-styles-${card.id}`}>
-          {card.styles.map((styleId) => (
+          {card.styles.map((styleId, index) => (
             <span
-              key={styleId}
+              key={styleId || `style-${card.id}-${index}`}
               className={`text-[9.5px] px-2.5 py-1 rounded-full border font-bold ${getStyleColor(styleId)} transition-all`}
               id={`style-tag-${card.id}-${styleId}`}
             >

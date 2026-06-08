@@ -13,7 +13,7 @@ export const PrivacyPolicyContent = () => (
     <h1 className="text-2xl font-bold text-[#6b8a9e] text-center mb-2">🔒 隐私政策</h1>
     <p className="text-center text-gray-500 mb-6"><strong>生效日期</strong>：2026年06月07日</p>
 
-    <div className="bg-linear-to-r from-blue-50 to-teal-50 p-6 rounded-lg border-l-4 border-[#6b8a9e] mb-6">
+    <div className="bg-gradient-to-r from-blue-50 to-teal-50 p-6 rounded-lg border-l-4 border-[#6b8a9e] mb-6">
       <p className="text-gray-700">欢迎使用「云序择名」（以下简称"本应用"）。本应用由<strong>光年跃迁（温州）科技有限公司</strong>（以下简称"我们"）开发并运营。我们深知个人信息对您的重要性，将严格遵守《中华人民共和国个人信息保护法》等相关法律法规，保护您的个人信息安全。</p>
     </div>
 
@@ -130,7 +130,7 @@ export const UserAgreementContent = () => (
 
 // --- 协议详情弹窗 ---
 export const AgreementModal = ({ onClose, title, content }: { onClose: () => void, title: string, content: React.ReactNode }) => (
-  <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-110">
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-[130]">
     <motion.div
       initial={{ scale: 0.95, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -170,7 +170,7 @@ export const PrivacyModal = ({
   onOpenAgreement: () => void, 
   onOpenPrivacy: () => void 
 }) => (
-  <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-[120]">
     <motion.div
       initial={{ scale: 0.95, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -225,7 +225,7 @@ export const PrivacyModal = ({
 
 // --- 拒绝确认弹窗 ---
 export const DeclineConfirmModal = ({ onConfirm, onCancel }: { onConfirm: () => void, onCancel: () => void }) => (
-  <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-110">
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-[130]">
     <motion.div
       initial={{ scale: 0.95, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
